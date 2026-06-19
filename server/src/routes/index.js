@@ -8,12 +8,23 @@
 
 const express = require('express');
 
+const { authenticate } = require('../middleware/auth');
 const healthRoutes = require('./health.routes');
 const authRoutes = require('./auth.routes');
+const patientsRoutes = require('./patients.routes');
+const appointmentsRoutes = require('./appointments.routes');
+const usersRoutes = require('./users.routes');
 
 const router = express.Router();
 
+// Public routes (no token required).
 router.use('/health', healthRoutes);
 router.use('/auth', authRoutes);
+
+// Protected routes: authenticate runs FIRST and attaches req.user, so every
+// handler below can trust req.user.role / req.user.id for authorization.
+router.use('/patients', authenticate, patientsRoutes);
+router.use('/appointments', authenticate, appointmentsRoutes);
+router.use('/users', authenticate, usersRoutes);
 
 module.exports = router;
