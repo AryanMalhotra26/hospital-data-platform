@@ -1,0 +1,159 @@
+/* ─────────────────────────────────────────────────────────────
+   Global styles. Plain CSS (no UI library), organized by concern.
+   Colors/spacing are CSS custom properties so they're easy to tweak.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --border: #e3e8f0;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --danger: #dc2626;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+
+  /* role badge colors */
+  --admin: #7c3aed;
+  --doctor: #0891b2;
+  --receptionist: #d97706;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--primary); text-decoration: none; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.btn:disabled { opacity: 0.6; cursor: default; }
+.btn--primary { background: var(--primary); color: #fff; }
+.btn--primary:hover:not(:disabled) { background: var(--primary-dark); }
+.btn--ghost { background: transparent; border-color: var(--border); color: var(--text); }
+.btn--ghost:hover { background: var(--bg); }
+.btn--danger { background: var(--danger); color: #fff; }
+
+/* ── Fields ──────────────────────────────────────────────── */
+.field { display: block; margin-bottom: 1rem; }
+.field__label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-muted); }
+.field input, .field select, input, select {
+  width: 100%;
+  font: inherit;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+.field input:focus, input:focus, select:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+
+/* ── Alerts ──────────────────────────────────────────────── */
+.alert { padding: 0.65rem 0.85rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; }
+.alert--error { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+
+/* ── Login ───────────────────────────────────────────────── */
+.login { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
+.login__card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+.login__title { margin: 0 0 0.25rem; font-size: 1.4rem; }
+.login__subtitle { margin: 0 0 1.5rem; color: var(--text-muted); }
+.login__submit { width: 100%; margin-top: 0.5rem; }
+.login__hint { margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+.login__hint ul { margin: 0.5rem 0 0; padding-left: 1.1rem; }
+.login__hint code { background: var(--bg); padding: 0.1rem 0.3rem; border-radius: 4px; }
+
+/* ── Navbar / shell ──────────────────────────────────────── */
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.navbar__brand { font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
+.navbar__links { display: flex; gap: 0.25rem; flex: 1; }
+.navbar__links a {
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.navbar__links a:hover { background: var(--bg); color: var(--text); }
+.navbar__links a.active { background: #eff4ff; color: var(--primary); }
+.navbar__user { display: flex; align-items: center; gap: 0.75rem; }
+.navbar__name { font-weight: 600; font-size: 0.9rem; }
+
+.content { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ── Badges ──────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--text-muted);
+}
+.badge--admin { background: var(--admin); }
+.badge--doctor { background: var(--doctor); }
+.badge--receptionist { background: var(--receptionist); }
+
+/* ── Pages ───────────────────────────────────────────────── */
+.page__title { margin: 0 0 0.4rem; font-size: 1.6rem; }
+.page__subtitle { margin: 0 0 1.75rem; color: var(--text-muted); }
+.placeholder {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  color: var(--text-muted);
+}
+
+/* ── Dashboard cards ─────────────────────────────────────── */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  color: var(--text);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 24, 40, 0.1); }
+.card__icon { font-size: 1.6rem; }
+.card__title { font-weight: 700; margin: 0.5rem 0 0.25rem; }
+.card__text { font-size: 0.88rem; color: var(--text-muted); }
