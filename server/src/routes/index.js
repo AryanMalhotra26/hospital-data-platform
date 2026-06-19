@@ -14,6 +14,7 @@ const authRoutes = require('./auth.routes');
 const patientsRoutes = require('./patients.routes');
 const appointmentsRoutes = require('./appointments.routes');
 const usersRoutes = require('./users.routes');
+const analyticsRoutes = require('./analytics.routes');
 
 const router = express.Router();
 
@@ -26,5 +27,6 @@ router.use('/auth', authRoutes);
 router.use('/patients', authenticate, patientsRoutes);
 router.use('/appointments', authenticate, appointmentsRoutes);
 router.use('/users', authenticate, usersRoutes);
+router.use('/analytics', authenticate, analyticsRoutes);
 
 module.exports = router;

@@ -195,3 +195,13 @@ a { color: var(--primary); text-decoration: none; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 .form-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.5rem; }
 textarea { width: 100%; font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; resize: vertical; }
+
+/* ── Analytics dashboard ─────────────────────────────────── */
+.analytics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+@media (max-width: 880px) { .analytics-grid { grid-template-columns: 1fr; } }
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.25rem; }
+.chart-card__title { margin: 0; font-size: 1.05rem; }
+.chart-card__sub { margin: 0.15rem 0 1rem; font-size: 0.82rem; color: var(--text-muted); }
+.table--compact th, .table--compact td { padding: 0.5rem 0.6rem; }
+.table--compact .num { text-align: right; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; color: var(--text-muted); }
