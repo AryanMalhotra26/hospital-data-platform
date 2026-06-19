@@ -157,3 +157,41 @@ a { color: var(--primary); text-decoration: none; }
 .card__icon { font-size: 1.6rem; }
 .card__title { font-weight: 700; margin: 0.5rem 0 0.25rem; }
 .card__text { font-size: 0.88rem; color: var(--text-muted); }
+
+/* ── Toolbar (page header + actions) ─────────────────────── */
+.toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.toolbar__controls { display: flex; gap: 0.6rem; align-items: center; }
+.toolbar__controls select { width: auto; }
+
+/* ── Tables ──────────────────────────────────────────────── */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table th, .table td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.table th { background: #fafbfe; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); }
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: #fafbfe; }
+.table__actions-col { text-align: right; }
+.table__actions { text-align: right; white-space: nowrap; }
+.table__actions .btn { margin-left: 0.4rem; }
+.notes-cell { white-space: normal; max-width: 260px; color: var(--text-muted); }
+.muted { color: var(--text-muted); }
+.cap { text-transform: capitalize; }
+.btn--sm { padding: 0.3rem 0.6rem; font-size: 0.82rem; }
+
+/* ── Status select (colored by value) ────────────────────── */
+.status-select { width: auto; font-weight: 600; font-size: 0.82rem; padding: 0.25rem 0.5rem; border-radius: 999px; border: 1px solid var(--border); cursor: pointer; }
+.status--scheduled { background: #eff4ff; color: #1d4ed8; border-color: #c7d7fe; }
+.status--completed { background: #ecfdf3; color: #027a48; border-color: #a6f4c5; }
+.status--cancelled { background: #fef3f2; color: #b42318; border-color: #fecdca; }
+.status--no_show   { background: #fffaeb; color: #b54708; border-color: #fedf89; }
+
+/* ── Modal + forms ───────────────────────────────────────── */
+.modal__overlay { position: fixed; inset: 0; background: rgba(16, 24, 40, 0.45); display: grid; place-items: center; padding: 1rem; z-index: 50; }
+.modal { width: 100%; max-width: 460px; background: var(--surface); border-radius: var(--radius); box-shadow: 0 20px 40px rgba(16, 24, 40, 0.2); max-height: 90vh; overflow: auto; }
+.modal__header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+.modal__title { margin: 0; font-size: 1.15rem; }
+.modal__close { background: none; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--text-muted); }
+.modal__body { padding: 1.25rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.form-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.5rem; }
+textarea { width: 100%; font: inherit; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; resize: vertical; }
