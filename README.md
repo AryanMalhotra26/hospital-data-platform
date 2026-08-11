@@ -304,8 +304,9 @@ Three things worth calling out:
 - **`status` is still correctly left unindexed.** At 4 distinct values over 500K rows the
   planner scans regardless; an index would only add write cost. Verified, not assumed.
 - **The list endpoints have no pagination**, which this dataset made obvious: `GET
-  /appointments` as an admin returns all 500,000 rows in ~1.7 s. The keyset row above is a
-  benchmark of the fix, not of shipped code — see limitations below.
+  /appointments` as an admin returns all 500,000 rows — a **111 MB JSON response** in ~1.8 s,
+  for a page that renders a few dozen rows. The keyset row above is a benchmark of the fix,
+  not of shipped code — see limitations below.
 
 ---
 
@@ -327,7 +328,8 @@ Three things worth calling out:
 
 ## Known limitations / next steps
 - **No pagination on the list endpoints.** `GET /patients` and `GET /appointments` return
-  every matching row. On the large dataset that's 500K rows in ~1.7 s. The fix is keyset
+  every matching row. On the large dataset that's 500K rows — a 111 MB response in ~1.8 s.
+  The fix is keyset
   pagination on `appointment_datetime` (benchmarked above at 43× faster than `OFFSET`);
   `idx_appointments_datetime` already supports it.
 - **No transactions.** Multi-statement writes (e.g. `POST /appointments`, which validates,
