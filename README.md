@@ -81,7 +81,8 @@ parameterized SQL through the pool.
 └── server/                      # Express backend
     ├── db/
     │   ├── schema.sql           # tables, foreign keys, indexes
-    │   ├── seed.sql             # generated demo data (deterministic)
+    │   ├── seed.sql             # small demo dataset, 550 rows (deterministic)
+    │   ├── seed_large.sql       # ~1.3M-row synthetic dataset for benchmarking
     │   └── generate_seed.js     # regenerates seed.sql
     └── src/
         ├── config/env.js        # fail-fast env loading
@@ -153,14 +154,27 @@ cd ..
 ```
 
 ### 2. Create the database, load schema + seed
-`schema.sql` creates the `hospital_db` database and its tables; `seed.sql` fills it with
-demo data (7 users, 50 patients, 200 appointments, 300 visits across 12 months).
+`schema.sql` creates the `hospital_db` database and its tables. There are two datasets to
+choose from — both synthetic and fully deterministic:
+
+| File | Contents | Load time | Use it for |
+|---|---|---|---|
+| `seed.sql` | 7 users, 50 patients, 200 appointments, 300 visits | instant | clicking through the UI |
+| `seed_large.sql` | 221 users, 50K patients, 500K appointments, 750K visits (~1.3M rows) | ~13 s | query plans and benchmarking |
 
 ```bash
 # Run as a MySQL user that can create databases (e.g. root):
 mysql -u root -p < server/db/schema.sql
-mysql -u root -p < server/db/seed.sql
+
+# then ONE of:
+mysql -u root -p < server/db/seed.sql        # small demo dataset
+mysql -u root -p < server/db/seed_large.sql  # ~1.3M rows (replaces all data)
 ```
+
+The large dataset exists because the small one can't tell you anything about performance:
+under a few thousand rows the optimizer will often skip an index entirely, since scanning a
+table that fits in a page or two genuinely is cheaper. Every indexing decision documented
+above is only observable at the larger size — see [Performance at scale](#performance-at-scale).
 
 Create a **least-privilege** application user for the API (DML only — no DDL):
 ```sql
@@ -267,6 +281,34 @@ FROM visits GROUP BY diagnosis_code ORDER BY count DESC LIMIT 10;  -- uses idx_v
 
 ---
 
+## Performance at scale
+
+Measured on the `seed_large.sql` dataset (500K appointments, 750K visits, 50K patients),
+MySQL 9.6 on a local machine, timings from `EXPLAIN ANALYZE` and repeated runs. This is
+**synthetic seed data, not production traffic** — the point is to compare query plans
+against each other on a table large enough for the difference to be real.
+
+| Query | Slow form | Fast form | Effect |
+|---|---|---|---|
+| A doctor's schedule<br>`WHERE doctor_id = ? ORDER BY appointment_datetime` | table scan: **500,000 rows examined**, 89 ms, plus a sort | index lookup on `idx_appointments_doctor_datetime`: **2,500 rows**, 33 ms, no sort | **200× fewer rows read** |
+| Appointment list with patient + doctor names | N+1: **5,001 queries**, 298 ms | one query, two `JOIN`s: **1 query**, 6.9 ms | **43× faster** |
+| Top diagnoses `GROUP BY diagnosis_code` | table scan into a temp table, 219 ms | covering index scan on `idx_visits_diagnosis`, 136 ms | 1.6× faster, no temp table |
+| Page 20,000 of the appointment list | `LIMIT 20 OFFSET 400000`, 47.5 ms | keyset: `WHERE appointment_datetime < ? LIMIT 20`, 1.1 ms | **43× faster** |
+
+Three things worth calling out:
+
+- **The composite index only pays off at size.** On the 550-row dataset the same query is
+  marginally *faster* without it, because descending a B+ tree costs more than reading two
+  pages. What changes with scale isn't the constant factor, it's that rows examined stays
+  flat at 2,500 while the scan grows with the table.
+- **`status` is still correctly left unindexed.** At 4 distinct values over 500K rows the
+  planner scans regardless; an index would only add write cost. Verified, not assumed.
+- **The list endpoints have no pagination**, which this dataset made obvious: `GET
+  /appointments` as an admin returns all 500,000 rows in ~1.7 s. The keyset row above is a
+  benchmark of the fix, not of shipped code — see limitations below.
+
+---
+
 ## Security notes
 
 - **RBAC is enforced server-side.** Frontend guards only shape the UI; every protected
@@ -284,6 +326,12 @@ FROM visits GROUP BY diagnosis_code ORDER BY count DESC LIMIT 10;  -- uses idx_v
 ---
 
 ## Known limitations / next steps
+- **No pagination on the list endpoints.** `GET /patients` and `GET /appointments` return
+  every matching row. On the large dataset that's 500K rows in ~1.7 s. The fix is keyset
+  pagination on `appointment_datetime` (benchmarked above at 43× faster than `OFFSET`);
+  `idx_appointments_datetime` already supports it.
+- **No transactions.** Multi-statement writes (e.g. `POST /appointments`, which validates,
+  inserts, then re-reads) aren't wrapped, so a failure part-way can't be rolled back.
 - Refresh-token flow for seamless sessions across page reloads.
 - Appointment time-conflict detection (double-booking checks).
 - Lazy-load the analytics route (`React.lazy`) to trim the Recharts bundle off the login path.
